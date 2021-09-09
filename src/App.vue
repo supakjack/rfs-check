@@ -1,117 +1,95 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <div>
-        <vs-navbar v-model="activeItem" class="nabarx">
-          <div slot="title">
-            <div class="flex">
-              <div class="flex-initial ...">
-                <img
-                  src="@/assets/hh-logo.jpeg"
-                  style="max-width: 5rem"
-                  alt=""
-                />
-              </div>
-              <div class="flex-initial mt-6">
-                <vs-navbar-title>
-                  <span class="text-2xl">โรงพยาบาลหัวหิน</span>
-                </vs-navbar-title>
-              </div>
+  <div>
+    <vs-row vs-justify="center" class="mt-5">
+      <vs-col type="flex" vs-justify="center" vs-align="center" vs-w="12">
+        <vs-card>
+          <div slot="header">
+            <div class="flex justify-between ...">
+              <span class="text-xl">วางข้อความเพื่อตรวจสอบ</span>
+              <vs-button
+                @click="onClickProcessLine"
+                color="danger"
+                type="filled"
+                >คลิกเพื่อตรวจสอบ</vs-button
+              >
             </div>
           </div>
-        </vs-navbar>
-      </div>
-    </div>
-
-    <div>
-      <vs-row vs-justify="center" class="mt-5">
-        <vs-col type="flex" vs-justify="center" vs-align="center" vs-w="12">
-          <vs-card>
-            <div slot="header">
-              <div class="flex justify-between ...">
-                <span class="text-xl">วางข้อความเพื่อตรวจสอบ</span>
-                <vs-button
-                  @click="onClickProcessLine"
-                  color="danger"
-                  type="filled"
-                  >คลิกเพื่อตรวจสอบ</vs-button
-                >
-              </div>
-            </div>
-            <div>
-              <div class="lined-textarea">
-                <div
-                  class="lined-textarea__lines"
-                  v-if="!disabled"
-                  :style="{ 'padding-right': longestWidth + 'px' }"
-                >
-                  <div class="lined-textarea__lines__inner" ref="lines">
-                    <p
-                      v-for="(line, index) in lines"
-                      :key="index"
-                      class="lined-textarea__lines__line"
-                      :class="{
-                        'lined-textarea__lines__line--invalid':
-                          invalidLines.includes(line),
-                      }"
-                      v-html="line"
-                    ></p>
-                  </div>
-                </div>
-                <textarea
-                  :disabled="disabled"
-                  :placeholder="placeholder"
-                  class="lined-textarea__content"
-                  :class="{
-                    'lined-textarea__content--disabled': disabled,
-                    'lined-textarea__content--wrap': !nowrap,
-                    'lined-textarea__content--nowrap': nowrap,
-                  }"
-                  v-model="content"
-                  v-on:scroll="scrollLines"
-                  v-on:input="onInput"
-                  v-on:mousedown="detectResize"
-                  :style="styles"
-                  ref="textarea"
-                ></textarea>
-                <div class="count-helper" ref="helper"></div>
-              </div>
-            </div>
-          </vs-card>
-        </vs-col>
-      </vs-row>
-
-      <vs-row vs-justify="center" class="mt-8">
-        <vs-col type="flex" vs-justify="center" vs-align="center" vs-w="12">
-          <vs-card>
-            <div slot="header">
-              <span class="text-xl">ผลลัพธ์</span>
-            </div>
-            <div>
-              <div v-for="(item, index) in results" :key="index">
-                <div class="mt-5" v-if="content">
-                  <span class="text-xl"
-                    >ตรวจพบข้อผิดพลาด '|' มีจำนวน :
-                    <span class="text-red-900 text-3xl">
-                      {{ item.number }}</span
-                    >
-                    <br />
-                    ณ บรรทัดที่ :
-                    <span class="text-red-900 text-3xl">
-                      {{ item.index }}
-                    </span>
-                    <br />
-                    ข้อความ :
-                    <span class="text-red-900 text-3xl"> {{ item.line }} </span>
-                    <hr />
-                  </span>
+          <div>
+            <div class="lined-textarea">
+              <div
+                class="lined-textarea__lines"
+                v-if="!disabled"
+                :style="{ 'padding-right': longestWidth + 'px' }"
+              >
+                <div class="lined-textarea__lines__inner" ref="lines">
+                  <p
+                    v-for="(line, index) in lines"
+                    :key="index"
+                    class="lined-textarea__lines__line"
+                    :class="{
+                      'lined-textarea__lines__line--invalid':
+                        invalidLines.includes(line),
+                    }"
+                    v-html="line"
+                  ></p>
                 </div>
               </div>
+              <textarea
+                :disabled="disabled"
+                :placeholder="placeholder"
+                class="lined-textarea__content"
+                :class="{
+                  'lined-textarea__content--disabled': disabled,
+                  'lined-textarea__content--wrap': !nowrap,
+                  'lined-textarea__content--nowrap': nowrap,
+                }"
+                v-model="content"
+                v-on:scroll="scrollLines"
+                v-on:input="onInput"
+                v-on:mousedown="detectResize"
+                :style="styles"
+                ref="textarea"
+              ></textarea>
+              <div class="count-helper" ref="helper"></div>
             </div>
-          </vs-card>
-        </vs-col>
-      </vs-row>
-    </div>
+          </div>
+        </vs-card>
+      </vs-col>
+    </vs-row>
+
+    <vs-row vs-justify="center" class="mt-8">
+      <vs-col type="flex" vs-justify="center" vs-align="center" vs-w="12">
+        <vs-card>
+          <div slot="header">
+            <span class="text-xl">ผลลัพธ์</span>
+          </div>
+          <div>
+            <div v-for="(item, index) in results" :key="index">
+              <div class="mt-5" v-if="content">
+                <span class="text-xl"
+                  >ตรวจพบข้อผิดพลาด '|' มีจำนวน :
+                  <span class="text-red-900 text-3xl"> {{ item.number }}</span>
+                  (ต้องมี 12 เท่านั้น)
+                  <br />
+                  ณ บรรทัดที่ :
+                  <span class="text-red-900 text-3xl"> {{ item.index }} </span>
+                  <br />
+                  ข้อความ :
+                  <span class="text-red-900 text-3xl"> {{ item.line }} </span>
+                  <hr />
+                </span>
+              </div>
+            </div>
+            <div class="mt-5" v-if="!content||results.length==0">
+              <span class="text-xl">
+                ไม่พบข้อผิดพลาด (กดปุ่มตรวจสอบซ้ำเพื่อตรวจสอบใหม่)
+                <hr />
+              </span>
+            </div>
+          </div>
+        </vs-card>
+      </vs-col>
+    </vs-row>
   </div>
 </template>
 
@@ -238,6 +216,11 @@ export default {
         this.content = val;
       }
     },
+    content(val){
+      if (!val) {
+        this.results = [];
+      }
+    }
   },
   methods: {
     async onClickProcessLine() {
@@ -329,13 +312,8 @@ export default {
   },
 };
 </script>
-<style>
-@import url("https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@1,800&display=swap");
 
-#app {
-  font-family: "Sarabun", sans-serif;
-}
-
+<style scoped>
 .lined-textarea {
   display: flex;
   font-size: 13px;
