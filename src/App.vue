@@ -42,7 +42,7 @@
                 <vs-textarea
                   height="300px"
                   label="วางข้อความไฟล์ BILLTRAN ลงที่นี้"
-                  v-model="textarea_opservice"
+                  v-model="textarea_billtran"
                 />
               </div>
             </div>
@@ -66,7 +66,7 @@
                 <vs-textarea
                   height="300px"
                   label="วางข้อความไฟล์ OPSERVICES ลงที่นี้"
-                  v-model="textarea_billtran"
+                  v-model="textarea_opservice"
                 />
               </div>
             </div>
@@ -128,6 +128,7 @@ export default {
     this.textarea_billtran = "";
     this.textarea_billtran_json = {};
     this.find_billtran_b = [];
+    this.arr_OPServices = [];
   },
   data() {
     return {
@@ -136,6 +137,7 @@ export default {
       textarea_opservice: "",
       textarea_billtran: "",
       find_billtran_b: [],
+      arr_OPServices: [],
     };
   },
   // watch: {
@@ -158,13 +160,13 @@ export default {
   // },
   methods: {
     async onClickProcessLine() {
-      this.textarea_opservice_json = JSON.parse(
-        convert.xml2json(this.textarea_opservice, { compact: true, spaces: 4 })
+      this.textarea_billtran_json = JSON.parse(
+        convert.xml2json(this.textarea_billtran, { compact: true, spaces: 4 })
       );
-      const arr_BillItems = this.textarea_opservice_json.ClaimRec.BillItems._text.split(
+      const arr_BillItems = this.textarea_billtran_json.ClaimRec.BillItems._text.split(
         /\r?\n/
       );
-      console.log(arr_BillItems);
+      // console.log(arr_BillItems);
 
       this.find_billtran_b = await arr_BillItems.filter((row) => {
         const columns = row.split("|");
@@ -173,18 +175,70 @@ export default {
         }
       });
 
-      console.log(this.find_billtran_b);
+      // console.log(this.find_billtran_b);
 
-      // this.textarea_billtran_json = JSON.parse(
-      //   convert.xml2json(this.textarea_billtran, { compact: true, spaces: 4 })
-      // );
-      // console.log(this.textarea_billtran_json);
+      this.textarea_opservice_json = JSON.parse(
+        convert.xml2json(this.textarea_opservice, { compact: true, spaces: 4 })
+      );
+      // console.log(this.textarea_opservice_json);
+      this.arr_OPServices = this.textarea_opservice_json.ClaimRec.OPServices._text.split(
+        /\r?\n/
+      );
+      // console.log(this.find_billtran_b);
+      // console.log(this.arr_OPServices);
 
-      // var result = convert.json2xml(this.textarea_opservice_json, {
-      //   compact: true,
-      //   spaces: 4,
+      // let set_push = [];
+
+      // this.arr_OPServices.map((OPService, index) => {
+      //   this.find_billtran_b.find((b) => {
+      //     const columns = b.split("|");
+      //     if (OPService.includes(columns[0])) {
+      //       console.log(index);
+      //       set_push = [
+      //         ...set_push,
+      //         {
+      //           index_op: index,
+      //           data: b,
+      //         },
+      //       ];
+      //       return b;
+      //     }
+      //   });
       // });
-      // console.log(result);
+
+      // console.log(set_push);
+      const new_ap = [];
+      this.arr_OPServices.map((OPService, index) => {
+        let last = "";
+        new_ap.push(OPService);
+        this.find_billtran_b.map((b) => {
+          const columns = b.split("|");
+          if (OPService.includes(columns[0]) && last != columns[0]) {
+            // console.log(index);
+            last = columns[0];
+            new_ap.push(b);
+          }
+        });
+      });
+
+      this.textarea_result = this.textarea_opservice_json;
+      this.arr_OPServices = new_ap;
+      // console.log(this.arr_OPServices);
+
+      this.textarea_result.ClaimRec.OPServices._text = "";
+      this.arr_OPServices.map((op) => {
+        this.textarea_result.ClaimRec.OPServices._text =
+          this.textarea_result.ClaimRec.OPServices._text + op + "\n";
+      });
+
+      // console.log(this.textarea_result);
+
+      var result = convert.json2xml(this.textarea_result, {
+        compact: true,
+        spaces: 4,
+      });
+      console.log(result);
+      this.textarea_result = result;
     },
   },
 };
