@@ -119,7 +119,7 @@
 </template>
 
 <script>
-// import convert from "xml-js";
+import convert from "xml-js";
 export default {
   name: "LinedTextarea",
   mounted() {
@@ -156,44 +156,22 @@ export default {
   // },
   methods: {
     async onClickProcessLine() {
-      // const x2js = new X2JS();
-      // const t = x2js.xml_str2json(this.textarea_opservice)
+     
       this.textarea_opservice_json = JSON.parse(
-        convert.xml2json(this.textarea_opservice, { compact: true, spaces: 4 })
+        convert.xml2json(this.textarea_opservice, { compact: false, spaces: 4 })
       );
-      console.log(this.textarea_opservice_json.ClaimRec.BillItems._text);
-      this.textarea_billtran_json = JSON.parse(
-        convert.xml2json(this.textarea_billtran, { compact: true, spaces: 4 })
-      );
-      // console.log(this.textarea_billtran_json);
-      const result = convert.js2xml(this.textarea_opservice_json); 
-      console.log(result);
       console.log(this.textarea_opservice_json);
+      this.textarea_billtran_json = JSON.parse(
+        convert.xml2json(this.textarea_billtran, { compact: false, spaces: 4 })
+      );
+      console.log(this.textarea_billtran_json);
 
+      // var result = convert.json2xml(this.textarea_opservice_json, {
+      //   compact: false,
+      //   spaces: 4,
+      // });
+      console.log(result);
     },
-    // async onClickProcessLine() {
-    //   this.results = [];
-    //   var text = this.content;
-    //   var lines = text.split(/\r?\n/);
-    //   console.log(lines);
-    //   console.log(lines.length);
-    //   await lines.map((line, index) => {
-    //     let number = 0;
-    //     for (var i = 0; i < line.length; i++) {
-    //       if (line.charAt(i) == "|") {
-    //         number = number + 1;
-    //       }
-    //     }
-    //     if (number != 12) {
-    //       this.results.push({
-    //         number: number,
-    //         index: index + 1,
-    //         line: line,
-    //       });
-    //     }
-    //   });
-    //   console.log(this.results);
-    // },
   },
 };
 </script>
