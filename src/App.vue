@@ -127,6 +127,7 @@ export default {
     this.textarea_opservice_json = {};
     this.textarea_billtran = "";
     this.textarea_billtran_json = {};
+    this.find_billtran_b = [];
   },
   data() {
     return {
@@ -134,6 +135,7 @@ export default {
       textarea_result: "",
       textarea_opservice: "",
       textarea_billtran: "",
+      find_billtran_b: [],
     };
   },
   // watch: {
@@ -156,21 +158,33 @@ export default {
   // },
   methods: {
     async onClickProcessLine() {
-     
       this.textarea_opservice_json = JSON.parse(
-        convert.xml2json(this.textarea_opservice, { compact: false, spaces: 4 })
+        convert.xml2json(this.textarea_opservice, { compact: true, spaces: 4 })
       );
-      console.log(this.textarea_opservice_json);
-      this.textarea_billtran_json = JSON.parse(
-        convert.xml2json(this.textarea_billtran, { compact: false, spaces: 4 })
+      const arr_BillItems = this.textarea_opservice_json.ClaimRec.BillItems._text.split(
+        /\r?\n/
       );
-      console.log(this.textarea_billtran_json);
+      console.log(arr_BillItems);
+
+      this.find_billtran_b = await arr_BillItems.filter((row) => {
+        const columns = row.split("|");
+        if (columns[2] == "B") {
+          return row;
+        }
+      });
+
+      console.log(this.find_billtran_b);
+
+      // this.textarea_billtran_json = JSON.parse(
+      //   convert.xml2json(this.textarea_billtran, { compact: true, spaces: 4 })
+      // );
+      // console.log(this.textarea_billtran_json);
 
       // var result = convert.json2xml(this.textarea_opservice_json, {
-      //   compact: false,
+      //   compact: true,
       //   spaces: 4,
       // });
-      console.log(result);
+      // console.log(result);
     },
   },
 };
