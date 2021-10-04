@@ -7,6 +7,11 @@ import Vuesax from 'vuesax'
 import 'vuesax/dist/vuesax.css' //Vuesax styles
 Vue.use(Vuesax,)
 
+import VueClipboard from 'vue-clipboard2'
+
+VueClipboard.config.autoSetContainer = true // add this line
+Vue.use(VueClipboard)
+
 Vue.config.productionTip = false
 
 new Vue({

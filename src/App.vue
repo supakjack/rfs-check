@@ -92,10 +92,7 @@
                     type="filled"
                     >คลิกเพื่อตรวจสอบ</vs-button
                   >
-                  <vs-button
-                    @click="onClickProcessLine"
-                    color="success"
-                    type="filled"
+                  <vs-button @click="copyText" color="success" type="filled"
                     >คลิกเพื่อคัดลอก</vs-button
                   >
                 </div>
@@ -140,25 +137,19 @@ export default {
       arr_OPServices: [],
     };
   },
-  // watch: {
-  //   // When left area grows/shrinks e.g. 9 => 10; 100 => 99
-  //   textarea_opservice(val, oldVal) {
-  //     if (val !== oldVal) {
-  //       // const x2js = new X2JS();
-  //       // this.textarea_opservice_json = x2js.xml_str2json(this.textarea_opservice)
-  //       // console.log(this.textarea_opservice_json);
-  //       // var result1 = convert.xml2json(this.textarea_opservice, {compact: true, spaces: 4});
-  //       // console.log(result1);
-  //       // this.$nextTick(() => this.calculateCharactersPerLine());
-  //     }
-  //   },
-  //   textarea_billtran(val, oldVal) {
-  //     if (val !== oldVal) {
-  //       console.log(val);
-  //     }
-  //   },
-  // },
   methods: {
+    copyText() {
+      this.$copyText(this.textarea_result).then(
+        function(e) {
+          alert("Copied");
+          console.log(e);
+        },
+        function(e) {
+          alert("Can not copy");
+          console.log(e);
+        }
+      );
+    },
     async onClickProcessLine() {
       this.textarea_billtran_json = JSON.parse(
         convert.xml2json(this.textarea_billtran, { compact: true, spaces: 4 })
@@ -166,7 +157,6 @@ export default {
       const arr_BillItems = this.textarea_billtran_json.ClaimRec.BillItems._text.split(
         /\r?\n/
       );
-      // console.log(arr_BillItems);
 
       this.find_billtran_b = await arr_BillItems.filter((row) => {
         const columns = row.split("|");
@@ -175,38 +165,13 @@ export default {
         }
       });
 
-      // console.log(this.find_billtran_b);
-
       this.textarea_opservice_json = JSON.parse(
         convert.xml2json(this.textarea_opservice, { compact: true, spaces: 4 })
       );
-      // console.log(this.textarea_opservice_json);
       this.arr_OPServices = this.textarea_opservice_json.ClaimRec.OPServices._text.split(
         /\r?\n/
       );
-      // console.log(this.find_billtran_b);
-      // console.log(this.arr_OPServices);
 
-      // let set_push = [];
-
-      // this.arr_OPServices.map((OPService, index) => {
-      //   this.find_billtran_b.find((b) => {
-      //     const columns = b.split("|");
-      //     if (OPService.includes(columns[0])) {
-      //       console.log(index);
-      //       set_push = [
-      //         ...set_push,
-      //         {
-      //           index_op: index,
-      //           data: b,
-      //         },
-      //       ];
-      //       return b;
-      //     }
-      //   });
-      // });
-
-      // console.log(set_push);
       const new_ap = [];
       this.arr_OPServices.map((OPService, index) => {
         let last = "";
@@ -214,7 +179,6 @@ export default {
         this.find_billtran_b.map((b) => {
           const columns = b.split("|");
           if (OPService.includes(columns[0]) && last != columns[0]) {
-            // console.log(index);
             last = columns[0];
             new_ap.push(b);
           }
@@ -223,7 +187,6 @@ export default {
 
       this.textarea_result = this.textarea_opservice_json;
       this.arr_OPServices = new_ap;
-      // console.log(this.arr_OPServices);
 
       this.textarea_result.ClaimRec.OPServices._text = "";
       this.arr_OPServices.map((op) => {
@@ -231,9 +194,7 @@ export default {
           this.textarea_result.ClaimRec.OPServices._text + op + "\n";
       });
 
-      // console.log(this.textarea_result);
-
-      var result = convert.json2xml(this.textarea_result, {
+      const result = convert.json2xml(this.textarea_result, {
         compact: true,
         spaces: 4,
       });
