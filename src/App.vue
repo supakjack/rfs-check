@@ -103,7 +103,7 @@
                 <vs-textarea
                   height="300px"
                   :readonly="true"
-                  label="ดูผลลัพธ์ประมวลผลไฟล์ opservice ใหม่ที่นี้ "
+                  label="ดูผลลัพธ์ประมวลผลไฟล์ OPSERVICES ใหม่ที่นี้ "
                   v-model="textarea_result"
                 />
               </div>
